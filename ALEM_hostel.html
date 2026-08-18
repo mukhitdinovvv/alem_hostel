@@ -1,0 +1,696 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALEM hostel — Туркестан</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+  :root{
+    --dark-1: #16301F;
+    --dark-2: #1E3A2A;
+    --olive: #7B9645;
+    --olive-btn: #5C6B3A;
+    --gold: #EDE59D;
+    --cream: #F7F6F1;
+    --cream-2: #FDFAD9;
+    --red: #7A1414;
+    --ink: #1A2B20;
+    --radius-lg: 28px;
+    --radius-md: 18px;
+    --radius-sm: 12px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Inter',sans-serif;
+    background: #DCE3E9;
+    color: var(--ink);
+    display:flex;
+    justify-content:center;
+  }
+  .page{
+    width:100%;
+    max-width:480px;
+    background: var(--cream);
+    min-height:100vh;
+    position:relative;
+    box-shadow: 0 0 60px rgba(0,0,0,0.15);
+    overflow:hidden;
+  }
+  h1,h2,h3{
+    font-family:'Montserrat',sans-serif;
+    margin:0;
+  }
+  a{ text-decoration:none; color:inherit; }
+  button{ font-family:inherit; cursor:pointer; }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    min-height: 420px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding: 22px 20px 70px;
+    color:#fff;
+    background: linear-gradient(180deg, rgba(210,216,214,0.35) 0%, rgba(60,70,55,0.25) 45%, rgba(12,20,14,0.72) 100%),
+                url('assets/images/img-001.jpg') center 32%/cover no-repeat;
+    text-align:center;
+  }
+  .hero-logo{
+    width: 168px;
+    height:auto;
+    margin-bottom: 26px;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.25));
+  }
+  .hero h1{
+    font-size: 21px;
+    font-weight:700;
+    line-height:1.35;
+    max-width: 340px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.45);
+    margin-bottom: 26px;
+  }
+  .amenities{
+    display:flex;
+    justify-content:center;
+    gap: 22px;
+    flex-wrap:wrap;
+  }
+  .amenity{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+    width: 68px;
+  }
+  .amenity .icon-circle{
+    width:44px;height:44px;
+    border-radius:50%;
+    border:1.5px solid rgba(255,255,255,0.85);
+    display:flex;align-items:center;justify-content:center;
+    background: rgba(20,30,22,0.25);
+    backdrop-filter: blur(2px);
+  }
+  .amenity .icon-circle svg{ width:20px; height:20px; }
+  .amenity span{
+    font-size:11.5px;
+    font-weight:600;
+    line-height:1.25;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  }
+
+  /* ---------- BOOKING METHODS ---------- */
+  .booking-section{
+    position:relative;
+    margin-top:-46px;
+    background: var(--cream);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding: 26px 18px 30px;
+  }
+  .section-title{
+    text-align:center;
+    font-size:19px;
+    font-weight:700;
+    color: var(--dark-2);
+    margin-bottom: 20px;
+  }
+  .book-methods{
+    display:grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap:8px;
+  }
+  .book-method{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+  }
+  .book-method .tile{
+    width:100%;
+    aspect-ratio: 1;
+    background:#fff;
+    border-radius: 16px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow: 0 3px 10px rgba(20,40,25,0.10);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .book-method:active .tile{ transform: scale(0.94); }
+  .book-method .tile svg, .book-method .tile img{ width:60%; height:60%; }
+  .book-method span{
+    font-size: 10.5px;
+    font-weight:600;
+    color: var(--dark-2);
+    text-align:center;
+    line-height:1.2;
+  }
+
+  /* ---------- ROOMS ---------- */
+  .rooms-section{
+    padding: 8px 14px 30px;
+  }
+  .rooms-list{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap:10px;
+  }
+  .room-card{
+    background:#fff;
+    border-radius: var(--radius-md);
+    overflow:hidden;
+    box-shadow: 0 4px 16px rgba(20,40,25,0.08);
+    display:flex;
+    flex-direction:column;
+  }
+
+  /* --- photo carousel --- */
+  .carousel{
+    position:relative;
+    width:100%;
+    aspect-ratio: 4/3.4;
+    background: linear-gradient(135deg, var(--dark-2), var(--olive));
+  }
+  .carousel-track{
+    display:flex;
+    width:100%;
+    height:100%;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    scroll-behavior:smooth;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .carousel-track::-webkit-scrollbar{ display:none; }
+  .carousel-track img{
+    flex:0 0 100%;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    scroll-snap-align:start;
+    display:block;
+  }
+  .carousel-track .ph-icon{
+    flex:0 0 100%;
+    width:100%;
+    height:100%;
+    display:flex;align-items:center;justify-content:center;
+    scroll-snap-align:start;
+  }
+  .carousel-track .ph-icon svg{ width:36%; height:36%; opacity:0.9; }
+  .carousel-dots{
+    position:absolute;
+    left:0; right:0; bottom:6px;
+    display:flex;
+    justify-content:center;
+    gap:4px;
+    pointer-events:none;
+  }
+  .carousel-dots span{
+    width:5px;height:5px;border-radius:50%;
+    background: rgba(255,255,255,0.5);
+    transition: background .2s, transform .2s;
+  }
+  .carousel-dots span.active{
+    background:#fff;
+    transform: scale(1.25);
+  }
+
+  .room-body{ padding: 10px 10px 12px; flex:1; display:flex; flex-direction:column; }
+  .room-body h3{
+    font-size:12.5px;
+    line-height:1.25;
+    color: var(--dark-2);
+    margin-bottom:4px;
+    min-height: 2.5em;
+  }
+  .room-body p{
+    font-size:10.5px;
+    color:#7A8579;
+    margin:0 0 10px;
+    line-height:1.3;
+    flex:1;
+  }
+  .btn-book{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:100%;
+    background: var(--dark-1);
+    color:#fff;
+    border:none;
+    border-radius: 999px;
+    padding: 9px 6px;
+    font-size:11px;
+    font-weight:600;
+    text-align:center;
+  }
+  .btn-book:active{ opacity:0.85; }
+
+  /* ---------- CONTACT / FOOTER ---------- */
+  .contact-section{
+    position:relative;
+    background: linear-gradient(160deg, #253D2D 0%, #2D4434 30%, #47603A 65%, #7B9645 100%);
+    padding: 30px 20px 0;
+    color:#fff;
+  }
+  .contact-rows{
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+    margin-bottom: 22px;
+  }
+  .contact-row{
+    display:flex;
+    gap:14px;
+    align-items:flex-start;
+  }
+  .contact-row .icon-circle{
+    width:34px;height:34px;
+    min-width:34px;
+    border-radius:50%;
+    border:1.4px solid var(--gold);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .contact-row .icon-circle svg{ width:16px;height:16px; }
+  .contact-row .label{
+    font-size:13px;
+    font-weight:700;
+    color: var(--gold);
+    margin-bottom:3px;
+  }
+  .contact-row .value{
+    font-size:14px;
+    font-weight:500;
+    color:#fff;
+    line-height:1.4;
+  }
+  .contact-row a.value{ display:block; }
+
+  .map-embed{
+    grid-column: 2;
+  }
+  .contact-top{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:14px;
+    margin-bottom:22px;
+  }
+  .map-frame{
+    border-radius: var(--radius-sm);
+    overflow:hidden;
+    border: 1px solid rgba(255,255,255,0.25);
+    height: 100%;
+    min-height: 220px;
+    position:relative;
+    background: #EDEBE4;
+  }
+  #hostel-map{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+  }
+  .map-frame .map-open-link{
+    position:absolute;
+    left:8px; bottom:8px;
+    z-index:500;
+    background: rgba(22,48,31,0.88);
+    color:#fff;
+    font-size:11px;
+    font-weight:600;
+    padding:6px 10px;
+    border-radius:999px;
+    text-decoration:none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  }
+  .leaflet-popup-content{ font-family:'Inter',sans-serif; font-size:12.5px; line-height:1.4; }
+  .leaflet-popup-content b{ color: var(--dark-2); }
+
+  .contact-buttons{
+    display:grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap:10px;
+    margin-bottom: 30px;
+  }
+  .cbtn{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    padding: 12px 6px;
+    border-radius: 999px;
+    font-size:12.5px;
+    font-weight:600;
+    text-align:center;
+  }
+  .cbtn svg{ width:18px;height:18px; }
+  .cbtn.outline{
+    border: 1.4px solid rgba(255,255,255,0.8);
+    color:#fff;
+  }
+  .cbtn.solid{
+    background: var(--olive-btn);
+    color:#fff;
+  }
+  .cbtn-row{
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    gap:7px;
+  }
+
+  .footer-brand{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding: 26px 0 18px;
+  }
+  .footer-brand img{ width:140px; }
+
+  .ornament-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap: clamp(18px, 6vw, 34px);
+    padding: 4px 24px 22px;
+  }
+  .ornament-row img{
+    height: 30px;
+    width:auto;
+    opacity:0.9;
+  }
+  .ornament-row img:nth-child(2){ height:26px; }
+  .ornament-row img:nth-child(4){ height:24px; }
+
+  .note{
+    text-align:center;
+    font-size:11px;
+    color: rgba(255,255,255,0.55);
+    padding: 10px 20px 14px;
+  }
+
+  @media (max-width:360px){
+    .hero h1{ font-size:18px; }
+    .amenities{ gap:14px; }
+    .amenity{ width:60px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HERO -->
+  <section class="hero">
+    <img class="hero-logo" src="assets/images/ALEM_hostel_logo.svg" alt="ALEM hostel">
+    <h1>Комфортное размещение<br>в Туркестане до 70 гостей</h1>
+    <div class="amenities">
+      <div class="amenity">
+        <div class="icon-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+        </div>
+        <span>Заселение 24/7</span>
+      </div>
+      <div class="amenity">
+        <div class="icon-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7"><path d="M2 8.5a15 15 0 0 1 20 0"/><path d="M5.5 12a10 10 0 0 1 13 0"/><path d="M9 15.5a5 5 0 0 1 6 0"/><circle cx="12" cy="19" r="1" fill="#fff" stroke="none"/></svg>
+        </div>
+        <span>Wi-Fi</span>
+      </div>
+      <div class="amenity">
+        <div class="icon-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7"><path d="M6 3v7a2 2 0 0 0 2 2v9"/><path d="M6 3v5"/><path d="M9 3v5"/><path d="M17 3c-1.5 0-3 1.5-3 4v4h2v10"/></svg>
+        </div>
+        <span>Питание</span>
+      </div>
+      <div class="amenity">
+        <div class="icon-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M10 16V8h3.2a2.4 2.4 0 0 1 0 4.8H10"/></svg>
+        </div>
+        <span>Парковка</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOOKING METHODS -->
+  <section class="booking-section">
+    <div class="section-title">Забронировать проживание</div>
+    <div class="book-methods">
+      <a class="book-method" href="https://wa.me/77059140707?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%B7%D0%B0%D0%B1%D1%80%D0%BE%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D1%82%D1%8C%20%D0%BF%D1%80%D0%BE%D0%B6%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%20%D0%B2%20ALEM%20hostel." target="_blank" rel="noopener">
+        <div class="tile">
+          <svg viewBox="0 0 32 32"><path fill="#25D366" d="M16 3C9 3 3.3 8.6 3.3 15.5c0 2.6.8 5 2.1 7L3 29l6.7-2.3c2 1.1 4.2 1.7 6.3 1.7 7 0 12.7-5.6 12.7-12.5S23 3 16 3z"/><path fill="#fff" d="M22.4 19.2c-.3.8-1.6 1.5-2.3 1.6-.6.1-1.3.1-2.1-.1-.5-.1-1.1-.3-1.9-.7-3.4-1.5-5.6-5-5.8-5.2-.2-.2-1.4-1.8-1.4-3.4s.9-2.4 1.2-2.7c.3-.3.6-.4.9-.4h.6c.2 0 .5 0 .7.5.3.7.9 2.3 1 2.5.1.2.1.4 0 .6-.1.2-.2.4-.4.6-.2.2-.4.5-.5.6-.2.2-.4.4-.2.8.2.4 1 1.6 2.1 2.6 1.4 1.3 2.6 1.7 3 1.9.4.2.6.1.8-.1.2-.2.9-1 1.1-1.4.2-.4.5-.3.8-.2.3.1 2 1 2.3 1.1.3.2.5.2.6.4.1.2.1.9-.2 1.7z"/></svg>
+        </div>
+        <span>WhatsApp</span>
+      </a>
+      <a class="book-method" href="https://2gis.kz/turkestan/firm/70000001082859449/68.304395,43.283684?m=68.304964,43.283624/18.82/p/24.64/r/-27.88" target="_blank" rel="noopener">
+        <div class="tile">
+          <img src="assets/images/img-003.png" alt="2GIS" style="width:78%;height:78%;object-fit:contain;">
+        </div>
+        <span>2GIS</span>
+      </a>
+      <a class="book-method" href="https://www.google.com/maps/search/?api=1&query=ALEM+hostel+Turkestan" target="_blank" rel="noopener">
+        <div class="tile">
+          <svg viewBox="0 0 32 32"><path fill="#EA4335" d="M16 3c-5 0-9 4-9 9 0 6.5 9 17 9 17s9-10.5 9-17c0-5-4-9-9-9z"/><circle cx="16" cy="12" r="4" fill="#fff"/></svg>
+        </div>
+        <span>Google Maps</span>
+      </a>
+      <a class="book-method" href="https://www.booking.com/searchresults.html?ss=ALEM+hostel+Turkestan" target="_blank" rel="noopener">
+        <div class="tile">
+          <svg viewBox="0 0 32 32"><rect x="3" y="3" width="26" height="26" rx="7" fill="#003580"/><text x="16" y="22" font-family="Arial, sans-serif" font-weight="700" font-size="16" fill="#fff" text-anchor="middle">B.</text></svg>
+        </div>
+        <span>Booking</span>
+      </a>
+      <a class="book-method" href="https://www.trip.com/hotels/list?searchWord=ALEM+hostel+Turkestan" target="_blank" rel="noopener">
+        <div class="tile">
+          <svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="13" fill="#0071EB"/><text x="16" y="20" font-family="Arial, sans-serif" font-weight="700" font-size="9.5" fill="#fff" text-anchor="middle">Trip</text></svg>
+        </div>
+        <span>Trip.com</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ROOMS -->
+  <section class="rooms-section">
+    <div class="section-title">Варианты размещения</div>
+    <div class="rooms-list">
+
+      <div class="room-card">
+        <div class="carousel" data-autoplay="4200">
+          <!-- Чтобы добавить ещё фото этой комнаты — просто добавь ещё одну строку <img src="..." loading="lazy"> ниже. Точки и автопрокрутка появятся сами. -->
+          <div class="carousel-track">
+            <img src="assets/images/img-004.jpg" alt="Двухместная комната" loading="lazy">
+          </div>
+          <div class="carousel-dots"></div>
+        </div>
+        <div class="room-body">
+          <h3>Двухместные комнаты</h3>
+          <p>Для индивидуальных гостей и сопровождающих</p>
+          <a class="btn-book" href="https://wa.me/77059140707?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%B7%D0%B0%D0%B1%D1%80%D0%BE%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D1%82%D1%8C%20%D0%B4%D0%B2%D1%83%D1%85%D0%BC%D0%B5%D1%81%D1%82%D0%BD%D1%8B%D0%B9%20%D0%BD%D0%BE%D0%BC%D0%B5%D1%80%20%D0%B2%20ALEM%20hostel." target="_blank" rel="noopener">
+            Забронировать
+          </a>
+        </div>
+      </div>
+
+      <div class="room-card">
+        <div class="carousel" data-autoplay="4200">
+          <div class="carousel-track">
+            <img src="assets/images/img-005.jpg" alt="Трёхместная комната" loading="lazy">
+          </div>
+          <div class="carousel-dots"></div>
+        </div>
+        <div class="room-body">
+          <h3>Трёхместная комната</h3>
+          <p>Комфортное размещение для трёх гостей</p>
+          <a class="btn-book" href="https://wa.me/77059140707?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%B7%D0%B0%D0%B1%D1%80%D0%BE%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D1%82%D1%8C%20%D1%82%D1%80%D1%91%D1%85%D0%BC%D0%B5%D1%81%D1%82%D0%BD%D1%83%D1%8E%20%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D1%83%20%D0%B2%20ALEM%20hostel." target="_blank" rel="noopener">
+            Забронировать
+          </a>
+        </div>
+      </div>
+
+      <div class="room-card">
+        <div class="carousel" data-autoplay="4200">
+          <div class="carousel-track">
+            <img src="assets/images/img-006.jpg" alt="Многоместная комната" loading="lazy">
+          </div>
+          <div class="carousel-dots"></div>
+        </div>
+        <div class="room-body">
+          <h3>Многоместные комнаты</h3>
+          <p>Размещение групп от 4 до 10 гостей</p>
+          <a class="btn-book" href="https://wa.me/77059140707?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%B7%D0%B0%D0%B1%D1%80%D0%BE%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D1%82%D1%8C%20%D0%BC%D0%B5%D1%81%D1%82%D0%BE%20%D0%B2%20%D0%BC%D0%BD%D0%BE%D0%B3%D0%BE%D0%BC%D0%B5%D1%81%D1%82%D0%BD%D0%BE%D0%BC%20%D0%BD%D0%BE%D0%BC%D0%B5%D1%80%D0%B5%20%D0%B2%20ALEM%20hostel." target="_blank" rel="noopener">
+            Забронировать
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CONTACT / FOOTER -->
+  <section class="contact-section">
+    <div class="contact-top">
+      <div class="contact-rows">
+        <div class="contact-row">
+          <div class="icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="#EDE59D" stroke-width="1.6"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.3"/></svg></div>
+          <div>
+            <div class="label">Адрес</div>
+            <div class="value">г. Туркестан,<br>ул. Кудас Жунисбекова, 50</div>
+          </div>
+        </div>
+        <div class="contact-row">
+          <div class="icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="#EDE59D" stroke-width="1.6"><path d="M4 4h3l2 5-2 1.5a12 12 0 0 0 6 6L14 15l5 2v3a2 2 0 0 1-2 2C9.5 22 2 14.5 2 6a2 2 0 0 1 2-2z"/></svg></div>
+          <div>
+            <div class="label">Телефон / WhatsApp</div>
+            <a class="value" href="tel:+77059140770">+7 705 914 70 70</a>
+          </div>
+        </div>
+        <div class="contact-row">
+          <div class="icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="#EDE59D" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></div>
+          <div>
+            <div class="label">Режим работы</div>
+            <div class="value">24/7</div>
+          </div>
+        </div>
+      </div>
+      <div class="map-frame">
+        <div id="hostel-map"></div>
+        <a class="map-open-link" href="https://2gis.kz/turkestan/firm/70000001082859449/68.304395,43.283684?m=68.304964,43.283624/18.82/p/24.64/r/-27.88" target="_blank" rel="noopener">Открыть в 2GIS ↗</a>
+      </div>
+    </div>
+
+    <div class="contact-buttons">
+      <a class="cbtn outline cbtn-row" href="tel:+77059140770">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7"><path d="M4 4h3l2 5-2 1.5a12 12 0 0 0 6 6L14 15l5 2v3a2 2 0 0 1-2 2C9.5 22 2 14.5 2 6a2 2 0 0 1 2-2z"/></svg>
+        Позвонить
+      </a>
+      <a class="cbtn solid cbtn-row" href="https://wa.me/77059140707?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%B7%D0%B0%D0%B1%D1%80%D0%BE%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D1%82%D1%8C%20%D0%BF%D1%80%D0%BE%D0%B6%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%20%D0%B2%20ALEM%20hostel." target="_blank" rel="noopener">
+        <svg viewBox="0 0 32 32"><path fill="#fff" d="M16 3C9 3 3.3 8.6 3.3 15.5c0 2.6.8 5 2.1 7L3 29l6.7-2.3c2 1.1 4.2 1.7 6.3 1.7 7 0 12.7-5.6 12.7-12.5S23 3 16 3zm5.9 16.2c-.3.8-1.6 1.5-2.3 1.6-.6.1-1.3.1-2.1-.1-.5-.1-1.1-.3-1.9-.7-3.4-1.5-5.6-5-5.8-5.2-.2-.2-1.4-1.8-1.4-3.4s.9-2.4 1.2-2.7c.3-.3.6-.4.9-.4h.6c.2 0 .5 0 .7.5.3.7.9 2.3 1 2.5.1.2.1.4 0 .6-.1.2-.2.4-.4.6-.2.2-.4.5-.5.6-.2.2-.4.4-.2.8.2.4 1 1.6 2.1 2.6 1.4 1.3 2.6 1.7 3 1.9.4.2.6.1.8-.1.2-.2.9-1 1.1-1.4.2-.4.5-.3.8-.2.3.1 2 1 2.3 1.1.3.2.5.2.6.4.1.2.1.9-.2 1.7z"/></svg>
+        WhatsApp
+      </a>
+      <a class="cbtn outline cbtn-row" href="https://2gis.kz/turkestan/directions/points/%7C68.304592%2C43.284015%3B70030076259414430?m=68.288381%2C43.280269%2F14.78%2Fr%2F0.43" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7"><path d="M12 2 21 9.5 12 22 3 9.5z"/><path d="M12 2v20"/></svg>
+        Маршрут
+      </a>
+    </div>
+
+    <div class="footer-brand">
+      <img src="assets/images/ALEM_hostel_logo_white.svg" alt="ALEM hostel">
+    </div>
+
+    <div class="ornament-row">
+      <img src="assets/images/img-008.svg" alt="">
+      <img src="assets/images/img-009.svg" alt="">
+      <img src="assets/images/img-010.svg" alt="">
+      <img src="assets/images/img-011.svg" alt="" style="height:20px">
+      <img src="assets/images/img-009.svg" alt="" style="transform:scaleX(-1)">
+    </div>
+    <div class="note">© ALEM hostel · Туркестан</div>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  // ---------- MAP ----------
+  if (window.L && document.getElementById('hostel-map')) {
+    var lat = 43.283684, lng = 68.304395;
+    var map = L.map('hostel-map', {
+      zoomControl: true,
+      scrollWheelZoom: false
+    }).setView([lat, lng], 16);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    var pinIcon = L.divIcon({
+      className: 'alem-pin',
+      html: '<div style="width:30px;height:30px;border-radius:50% 50% 50% 0;background:#16301F;border:2px solid #EDE59D;transform:rotate(-45deg);box-shadow:0 2px 6px rgba(0,0,0,.35);"></div>',
+      iconSize: [30, 30],
+      iconAnchor: [15, 30]
+    });
+
+    L.marker([lat, lng], { icon: pinIcon }).addTo(map)
+      .bindPopup('<b>ALEM hostel</b><br>г. Туркестан,<br>ул. Кудас Жунисбекова, 50')
+      .openPopup();
+
+    map.on('click', function(){ map.scrollWheelZoom.enable(); });
+  }
+
+  var carousels = document.querySelectorAll('.carousel');
+  carousels.forEach(function(carousel){
+    var track = carousel.querySelector('.carousel-track');
+    var dotsWrap = carousel.querySelector('.carousel-dots');
+    var slides = Array.prototype.slice.call(track.children);
+    var count = slides.length;
+    if(count <= 1) return; // nothing to scroll — no dots, no autoplay
+
+    // build dots
+    var dots = [];
+    for(var i=0;i<count;i++){
+      var d = document.createElement('span');
+      if(i===0) d.className = 'active';
+      dotsWrap.appendChild(d);
+      dots.push(d);
+    }
+
+    var index = 0;
+    var autoplayDelay = parseInt(carousel.getAttribute('data-autoplay')) || 4000;
+    var timer = null;
+    var resumeTimer = null;
+
+    function goTo(i){
+      index = (i + count) % count;
+      track.scrollTo({ left: index * track.clientWidth, behavior: 'smooth' });
+      dots.forEach(function(dot, di){ dot.className = di === index ? 'active' : ''; });
+    }
+
+    function startAutoplay(){
+      stopAutoplay();
+      timer = setInterval(function(){ goTo(index + 1); }, autoplayDelay);
+    }
+    function stopAutoplay(){
+      if(timer){ clearInterval(timer); timer = null; }
+    }
+    function pauseThenResume(){
+      stopAutoplay();
+      if(resumeTimer) clearTimeout(resumeTimer);
+      resumeTimer = setTimeout(startAutoplay, 6000);
+    }
+
+    // keep dots in sync when the user swipes manually
+    var scrollTimeout = null;
+    track.addEventListener('scroll', function(){
+      if(scrollTimeout) clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(function(){
+        var i = Math.round(track.scrollLeft / track.clientWidth);
+        index = Math.max(0, Math.min(count - 1, i));
+        dots.forEach(function(dot, di){ dot.className = di === index ? 'active' : ''; });
+      }, 80);
+    });
+
+    track.addEventListener('touchstart', pauseThenResume, { passive: true });
+    track.addEventListener('mousedown', pauseThenResume);
+
+    dots.forEach(function(dot, di){
+      dot.style.pointerEvents = 'auto';
+      dot.style.cursor = 'pointer';
+      dot.addEventListener('click', function(){ goTo(di); pauseThenResume(); });
+    });
+
+    window.addEventListener('resize', function(){ track.scrollTo({ left: index * track.clientWidth }); });
+
+    startAutoplay();
+  });
+})();
+</script>
+</body>
+</html>
+
+
