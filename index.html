@@ -52,6 +52,7 @@
     position:relative;
     height: 340px;
     background: url('assets/images/img-001.jpg') center/cover no-repeat;
+    z-index:1;
   }
 
   /* ---------- INTRO (headline + amenities, on cream) ---------- */
@@ -108,16 +109,30 @@
   /* ---------- BOOKING METHODS ---------- */
   .booking-section{
     position:relative;
+    z-index:2;
+    overflow:visible;
     margin-top:-46px;
     background: var(--cream);
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     padding: 58px 18px 30px;
   }
+  .booking-section::after{
+    content:'';
+    position:absolute;
+    left:-22px;
+    bottom:18px;
+    width:92px;
+    height:96px;
+    background:url('assets/images/Орнамент 2.2.svg') center/contain no-repeat;
+    opacity:.12;
+    pointer-events:none;
+  }
+  .booking-section > *{ position:relative; z-index:1; }
   .floating-badge{
     position:absolute;
     top:0;
     left:50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -62%);
     width:141px;
     height:141px;
     border-radius:50%;
@@ -175,6 +190,7 @@
   .book-method .tile svg, .book-method .tile img{ width:58px; height:58px; object-fit:contain; }
   .book-method .tile img.logo-2gis{ width:56px; height:56px; }
   .book-method .tile img.logo-whatsapp{ width:52px; height:52px; }
+  .book-method .tile img.logo-google-maps{ width:52px; height:52px; }
   .book-method .tile img.logo-booking{ border-radius:12px; }
   .book-method span{
     font-size: 10.5px;
@@ -186,8 +202,22 @@
 
   /* ---------- ROOMS ---------- */
   .rooms-section{
+    position:relative;
+    overflow:hidden;
     padding: 8px 14px 30px;
   }
+  .rooms-section::after{
+    content:'';
+    position:absolute;
+    right:-18px;
+    bottom:8px;
+    width:112px;
+    height:112px;
+    background:url('assets/images/Орнамент 1.2.svg') center/contain no-repeat;
+    opacity:.14;
+    pointer-events:none;
+  }
+  .rooms-section > *{ position:relative; z-index:1; }
   .rooms-list{
     display:grid;
     grid-template-columns: repeat(3, 1fr);
@@ -353,10 +383,23 @@
   /* ---------- CONTACT / FOOTER ---------- */
   .contact-section{
     position:relative;
+    overflow:hidden;
     background: linear-gradient(160deg, #253D2D 0%, #2D4434 30%, #47603A 65%, #7B9645 100%);
     padding: 30px 20px 0;
     color:#fff;
   }
+  .contact-section::after{
+    content:'';
+    position:absolute;
+    right:-18px;
+    bottom:20px;
+    width:150px;
+    height:150px;
+    background:url('assets/images/Орнамент 4.1.svg') center/contain no-repeat;
+    opacity:.18;
+    pointer-events:none;
+  }
+  .contact-section > *{ position:relative; z-index:1; }
   .contact-rows{
     display:flex;
     flex-direction:column;
@@ -476,6 +519,8 @@
   }
   .footer-brand img{ width:140px; }
 
+  .footer-ornaments{ display:none; }
+
   .note{
     text-align:center;
     font-size:11px;
@@ -487,6 +532,17 @@
     .intro-title{ font-size:19px; max-width:290px; }
     .amenities{ gap:16px; }
     .amenity{ width:58px; }
+  }
+  @media (max-width:600px){
+    .rooms-section::after,
+    .booking-section::after{ display:none; }
+    .contact-section::after{
+      width:112px;
+      height:112px;
+      right:-20px;
+      bottom:12px;
+      opacity:.16;
+    }
   }
 </style>
 </head>
