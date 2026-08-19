@@ -7,8 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
   :root{
     --dark-1: #16301F;
@@ -128,13 +126,15 @@
     align-items:center;
     justify-content:center;
     box-shadow: 0 10px 26px rgba(15,30,18,0.30), 0 2px 8px rgba(0,0,0,0.18);
-    border: 3px solid var(--cream);
+    border: 4px solid var(--olive);
     outline: 1px solid rgba(20,40,25,0.08);
     z-index: 20;
   }
   .floating-badge img{
-    width:100%;
+    width:88%;
+    max-height:88%;
     height:auto;
+    object-fit:contain;
     display:block;
   }
   .section-title{
@@ -253,6 +253,71 @@
     background:#fff;
     transform: scale(1.25);
   }
+  .carousel-track,
+  .room-card{ cursor:pointer; }
+
+  .gallery-modal{
+    position:fixed;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+    background:rgba(8,18,12,0.88);
+    z-index:1000;
+  }
+  .gallery-modal.is-open{ display:flex; }
+  .gallery-dialog{
+    position:relative;
+    width:min(100%, 460px);
+  }
+  .gallery-image{
+    display:block;
+    width:100%;
+    max-height:78vh;
+    object-fit:contain;
+    border-radius:16px;
+  }
+  .gallery-title{
+    margin:12px 42px 0;
+    color:#fff;
+    font-size:16px;
+    font-weight:700;
+    text-align:center;
+  }
+  .gallery-close,
+  .gallery-arrow{
+    position:absolute;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:38px;
+    height:38px;
+    border:1px solid rgba(255,255,255,0.7);
+    border-radius:50%;
+    background:rgba(22,48,31,0.82);
+    color:#fff;
+    font-size:24px;
+    line-height:1;
+    cursor:pointer;
+  }
+  .gallery-close{ top:-12px; right:-8px; }
+  .gallery-arrow{ top:42%; }
+  .gallery-prev{ left:8px; }
+  .gallery-next{ right:8px; }
+  .gallery-dots{
+    display:flex;
+    justify-content:center;
+    gap:6px;
+    margin-top:12px;
+  }
+  .gallery-dots span{
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.45);
+  }
+  .gallery-dots span.active{ background:#fff; transform:scale(1.2); }
 
   .room-body{ padding: 10px 10px 12px; flex:1; display:flex; flex-direction:column; }
   .room-body h3{
@@ -349,6 +414,13 @@
     width:100%;
     height:100%;
   }
+  .map-frame iframe{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    border:0;
+  }
   .map-frame .map-open-link{
     position:absolute;
     left:8px; bottom:8px;
@@ -362,9 +434,6 @@
     text-decoration:none;
     box-shadow: 0 2px 8px rgba(0,0,0,0.25);
   }
-  .leaflet-popup-content{ font-family:'Inter',sans-serif; font-size:12.5px; line-height:1.4; }
-  .leaflet-popup-content b{ color: var(--dark-2); }
-
   .contact-buttons{
     display:grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -407,29 +476,6 @@
   }
   .footer-brand img{ width:140px; }
 
-  .ornament-row{
-    position:absolute;
-    top:8px;
-    right:6px;
-    width:92px;
-    height:84px;
-    padding:0;
-    pointer-events:none;
-    z-index:2;
-  }
-  .ornament-row img{
-    position:absolute;
-    width:44px;
-    height:44px;
-    opacity:0.78;
-    object-fit:contain;
-  }
-  .ornament-row img:nth-child(1){ top:0; right:2px; transform:rotate(8deg); }
-  .ornament-row img:nth-child(2){ top:18px; left:4px; transform:rotate(-72deg) scale(.88); }
-  .ornament-row img:nth-child(3){ top:36px; right:0; transform:rotate(92deg) scale(.82); }
-  .ornament-row img:nth-child(4),
-  .ornament-row img:nth-child(5){ display:none; }
-
   .note{
     text-align:center;
     font-size:11px;
@@ -457,7 +503,7 @@
       <img src="assets/images/ALEM_hostel_logo.svg" alt="ALEM hostel">
     </div>
 
-    <h1 class="intro-title">Комфортное размещение в Туркестане до 70 гостей</h1>
+    <h1 class="intro-title">Комфортное размещение<br>в Туркестане до 70 гостей</h1>
     <div class="amenities">
       <div class="amenity">
         <div class="icon-circle">
@@ -504,7 +550,7 @@
       </a>
       <a class="book-method" href="https://www.google.com/maps/search/?api=1&query=ALEM+hostel+Turkestan" target="_blank" rel="noopener">
         <div class="tile">
-          <svg viewBox="0 0 32 32"><path fill="#EA4335" d="M16 3c-5 0-9 4-9 9 0 6.5 9 17 9 17s9-10.5 9-17c0-5-4-9-9-9z"/><circle cx="16" cy="12" r="4" fill="#fff"/></svg>
+          <img class="logo-google-maps" src="https://logo-teka.com/wp-content/uploads/2025/07/google-maps-sign-logo.svg" alt="Google Maps">
         </div>
         <span>Google Maps</span>
       </a>
@@ -618,8 +664,7 @@
         </div>
       </div>
       <div class="map-frame">
-        <div id="hostel-map"></div>
-        <a class="map-open-link" href="https://2gis.kz/turkestan/firm/70000001082859449/68.304395,43.283684?m=68.304964,43.283624/18.82/p/24.64/r/-27.88" target="_blank" rel="noopener">Открыть в 2GIS ↗</a>
+        <iframe src="https://www.google.com/maps?q=43.283684,68.304395&z=16&output=embed" title="ALEM hostel на Google Maps" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
       </div>
     </div>
 
@@ -633,7 +678,7 @@
         WhatsApp
       </a>
       <a class="cbtn outline cbtn-row" href="https://2gis.kz/turkestan/directions/points/%7C68.304592%2C43.284015%3B70030076259414430?m=68.288381%2C43.280269%2F14.78%2Fr%2F0.43" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7"><path d="M12 2 21 9.5 12 22 3 9.5z"/><path d="M12 2v20"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11.5a7 7 0 1 0-14 0C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.3"/></svg>
         Маршрут
       </a>
     </div>
@@ -642,46 +687,85 @@
       <img src="assets/images/ALEM_hostel_logo_white.svg" alt="ALEM hostel">
     </div>
 
-    <div class="ornament-row">
-      <img src="assets/images/img-008.svg" alt="">
-      <img src="assets/images/img-008.svg" alt="">
-      <img src="assets/images/img-008.svg" alt="">
-      <img src="assets/images/img-008.svg" alt="" style="height:20px">
-      <img src="assets/images/img-008.svg" alt="" style="transform:scaleX(-1)">
-    </div>
     <div class="note">© ALEM hostel · Туркестан</div>
   </section>
 
 </div>
 
+<div class="gallery-modal" aria-hidden="true">
+  <div class="gallery-dialog" role="dialog" aria-modal="true" aria-label="Галерея номера">
+    <button class="gallery-close" type="button" aria-label="Закрыть">&times;</button>
+    <button class="gallery-arrow gallery-prev" type="button" aria-label="Предыдущее фото">&#8249;</button>
+    <img class="gallery-image" alt="">
+    <button class="gallery-arrow gallery-next" type="button" aria-label="Следующее фото">&#8250;</button>
+    <div class="gallery-title"></div>
+    <div class="gallery-dots"></div>
+  </div>
+</div>
+
 <script>
 (function(){
-  // ---------- MAP ----------
-  if (window.L && document.getElementById('hostel-map')) {
-    var lat = 43.283684, lng = 68.304395;
-    var map = L.map('hostel-map', {
-      zoomControl: true,
-      scrollWheelZoom: false
-    }).setView([lat, lng], 16);
+  var gallery = document.querySelector('.gallery-modal');
+  var galleryImage = gallery.querySelector('.gallery-image');
+  var galleryTitle = gallery.querySelector('.gallery-title');
+  var galleryDots = gallery.querySelector('.gallery-dots');
+  var galleryImages = [];
+  var galleryIndex = 0;
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-
-    var pinIcon = L.divIcon({
-      className: 'alem-pin',
-      html: '<div style="width:30px;height:30px;border-radius:50% 50% 50% 0;background:#16301F;border:2px solid #EDE59D;transform:rotate(-45deg);box-shadow:0 2px 6px rgba(0,0,0,.35);"></div>',
-      iconSize: [30, 30],
-      iconAnchor: [15, 30]
+  function renderGallery(){
+    var image = galleryImages[galleryIndex];
+    galleryImage.src = image.src;
+    galleryImage.alt = image.alt;
+    galleryTitle.textContent = image.title;
+    galleryDots.innerHTML = '';
+    galleryImages.forEach(function(_, index){
+      var dot = document.createElement('span');
+      if(index === galleryIndex) dot.className = 'active';
+      galleryDots.appendChild(dot);
     });
-
-    L.marker([lat, lng], { icon: pinIcon }).addTo(map)
-      .bindPopup('<b>ALEM hostel</b><br>г. Туркестан,<br>ул. Кудас Жунисбекова, 50')
-      .openPopup();
-
-    map.on('click', function(){ map.scrollWheelZoom.enable(); });
   }
+
+  function openGallery(card){
+    galleryImages = Array.prototype.slice.call(card.querySelectorAll('.carousel-track img')).map(function(image){
+      return { src:image.src, alt:image.alt, title:card.querySelector('h3').textContent };
+    });
+    galleryIndex = 0;
+    renderGallery();
+    gallery.classList.add('is-open');
+    gallery.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeGallery(){
+    gallery.classList.remove('is-open');
+    gallery.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll('.room-card').forEach(function(card){
+    card.addEventListener('click', function(event){
+      if(event.target.closest('.btn-book')) return;
+      openGallery(card);
+    });
+  });
+  gallery.querySelector('.gallery-close').addEventListener('click', closeGallery);
+  gallery.querySelector('.gallery-prev').addEventListener('click', function(){
+    galleryIndex = (galleryIndex - 1 + galleryImages.length) % galleryImages.length;
+    renderGallery();
+  });
+  gallery.querySelector('.gallery-next').addEventListener('click', function(){
+    galleryIndex = (galleryIndex + 1) % galleryImages.length;
+    renderGallery();
+  });
+  gallery.addEventListener('click', function(event){
+    if(event.target === gallery) closeGallery();
+  });
+  document.addEventListener('keydown', function(event){
+    if(!gallery.classList.contains('is-open')) return;
+    if(event.key === 'Escape') closeGallery();
+    if(event.key === 'ArrowLeft') gallery.querySelector('.gallery-prev').click();
+    if(event.key === 'ArrowRight') gallery.querySelector('.gallery-next').click();
+  });
 
   var carousels = document.querySelectorAll('.carousel');
   carousels.forEach(function(carousel){
